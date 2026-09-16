@@ -16,3 +16,8 @@ Thumbs.db
 __pycache__/
 *.pyc
 *.tmp
+
+# Deploy directories
+_deploy_test/
+deploy-staging/
+
