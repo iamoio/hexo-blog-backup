@@ -20,8 +20,14 @@ __pycache__/
 # Deploy directories
 _deploy_test/
 deploy-staging/
-
+images_deploy/
 
 # Archive directories
 source/_archive_*/
+
+# WP export artifacts
+source/wp-content/
+*.zip
+*.tar.gz
+*.bundle
 
