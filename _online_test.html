@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10 个可免费使用的 AI API 平台：零成本调用主流大模型 | 爱科技</title><noscript>开启 JavaScript 后才能访问本站</noscript><link rel="icon" href="/img/logo.png"><link rel="stylesheet" href="/css/index.css?v=4.0.0"><link rel="canonical" href="https://aikeji-4rq.pages.dev/10-free-ai-api-providers/index.html"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.0/css/all.min.css"><!-- Feature-specific CSS--><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="本文整理了10个提供免费大模型API的平台，包括OpenRouter、GitHub Models、NVIDIA NIM、Together AI、Cloudflare Workers AI、Groq、Google AI Studio、Mistral AI、Cohere和Hugging Face Inf"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="爱科技"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/logo.png"><link rel="apple-touch-icon" href="/img/logo.png" sizes="180x180"><script>console.log(' %c Solitude %c ' + '4.0.0' + ' %c https://github.com/everfu/hexo-theme-solitude',
+    'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+    'background:#ff9a9a ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+    'background:unset ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff')
+</script><link rel="stylesheet" href="/css/60s-junla.css"><script>(()=>{
+        const parseConfig = (id) => {
+            const element = document.getElementById(id)
+            if (!element) return {}
+            try {
+                return JSON.parse(element.content?.textContent || element.textContent || '{}')
+            } catch (error) {
+                console.error('Invalid Solitude config:', error)
+                return {}
+            }
+        }
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
+
+                if (!itemStr) {
+                    return undefined
+                }
+                let item
+                try {
+                    item = JSON.parse(itemStr)
+                } catch (error) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                const now = new Date()
+
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        const resourceRequests = new Map()
+        const loadResource = (url, create) => {
+            const absoluteUrl = new URL(url, document.baseURI).href
+            if (resourceRequests.has(absoluteUrl)) return resourceRequests.get(absoluteUrl)
+            const request = new Promise((resolve, reject) => {
+                const element = create(absoluteUrl)
+                element.addEventListener('load', () => resolve(element), {once: true})
+                element.addEventListener('error', () => {
+                    resourceRequests.delete(absoluteUrl)
+                    reject(new Error('Unable to load ' + absoluteUrl))
+                }, {once: true})
+                document.head.appendChild(element)
+            })
+            resourceRequests.set(absoluteUrl, request)
+            return request
+        }
+        const api = window.Solitude || {}
+        window.Solitude = api
+        api.installLegacyAdapter = () => {
+            const aliases = {
+                utils: api,
+                sco: api,
+                GLOBAL_CONFIG: api.config
+            }
+            Object.entries(aliases).forEach(([name, value]) => {
+                if (name in window) return
+                Object.defineProperty(window, name, {
+                    configurable: true,
+                    enumerable: false,
+                    value
+                })
+            })
+        }
+        Object.defineProperties(api, {
+            config: {configurable: true, get: () => parseConfig('site-config')},
+            page: {configurable: true, get: () => parseConfig('config-diff')}
+        })
+        Object.assign(api, {
+            saveToLocal: saveToLocal,
+            loadStyle: (url, options = {}) => loadResource(url, href => {
+                const link = document.createElement('link')
+                link.rel = 'stylesheet'
+                link.href = href
+                if (options.id) link.id = options.id
+                return link
+            }),
+            loadScript: (url, options = {}) => {
+              if (url.includes('barrage')) api.installLegacyAdapter()
+              return loadResource(url, src => {
+                const script = document.createElement('script')
+                script.src = src
+                script.async = options.async !== false
+                Object.entries(options.attributes || {}).forEach(([key, value]) => script.setAttribute(key, value))
+                return script
+              })
+            },
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
+
+                if (name && keyObj[name]) return
+
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+            addEventListenerPjax: (ele, event, fn, option = false) => {
+              ele.addEventListener(event, fn, option)
+              api.addGlobalFn('pjax', () => {
+                  ele.removeEventListener(event, fn, option)
+              })
+            },
+            diffDateFormat: (selector) => {
+                selector.forEach(item => {
+                    const date = new Date(item.getAttribute('datetime') || item.textContent);
+                    item.textContent = (date.getMonth() + 1).toString()+'/'+date.getDate().toString();
+                });
+            },
+        })
+        api.getCSS = (url, id = false) => api.loadStyle(url, {id})
+        api.getScript = (url, attr = {}) => api.loadScript(url, {attributes: attr})
+        api.on = (name, handler) => {
+            const eventName = 'solitude:' + name
+            document.addEventListener(eventName, handler)
+            return () => document.removeEventListener(eventName, handler)
+        }
+        api.navigate = url => api.pjax?.loadUrl ? api.pjax.loadUrl(url) : window.location.assign(url)
+    })()</script><!-- theme--><script>initTheme = () => {
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const cachedMode = Solitude.saveToLocal.get('theme');
+    if (cachedMode === undefined) {
+        const nowMode =
+            isDarkMode ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', nowMode);
+    } else {
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    }
+    Solitude.rightMenu?.mode(cachedMode === 'dark' && isDarkMode)
+}
+initTheme()</script><template id="site-config">{"root":"/","runtime":"2023-04-20 00:00:00","lazyload":{"enable":false,"error":"/img/error_load.avif"},"copyright":false,"highlight":{"limit":200,"expand":true,"copy":true,"syntax":"highlight.js"},"friend_links":{"async":false,"path":"/links.json","total":0,"placeholder":"","default_avatar":"/img/default_avatar.avif","more_url":"/links/","loading":"正在加载友链…","error":"友链加载失败，请稍后重试。","retry":"重新加载","random":"点击前往按钮进入随机一个友链，不保证跳转网站的安全性和可用性。本次随机到的是本站友链：⌈ ${name} ⌋","to":"前往","more":"更多","default_sort":"默认排序","random_sort":"随机排序","sort_label":"切换排序方式","scroll_left":"向左滚动","scroll_right":"向右滚动"},"random_posts":["/2026-09-15-60s-world/","/2026-09-13-60s-world/","/stocksnap-io-free-photo-download/","/cydrive-telegram-virtual-hard-drive/","/gratisography-free-photo-download/","/2026-09-12-60s-world/","/hq-icon-app-store-hd-icon-downloader/","/free-legal-ebook-sources/","/2026-09-11-60s-world/","/netease-url-netease-music-lossless-resolver/","/2026-09-10-60s-world/","/gemini-3-8-flash-free-aistudio/","/memos-on-cloudflare/","/10-free-ai-api-providers/","/2026-09-09-60s-world/","/apowersoft-web-video-downloader/","/agnes-3-0-flash-review/","/2026-09-08-60s-world/","/2026-09-07-60s-world/","/go-music-dl-open-source-music-downloader/","/astrbot-open-source-agent-framework/","/2026-09-06-60s-world/","/ublock-origin-mv3-full-revive/","/workbuddy-remote-control-phone-ai/","/google-workspace-11yuan-com-domain/","/flying-cow-music-independent-app-finally-beta-tested/","/27974star-another-ai-station-building-artifact-quietly/","/2026-09-05-60s-world/","/weixin-gongzhonghao-qihao-full-guide/","/2026-09-04-60s-world/","/xiaomi-album-syncer/","/2026-09-03-60s-world/","/glm-5/","/mailflare-self-hosted-email/","/social-video-downloader-vs-greenvideo/","/telegram-drive-cloud-workspace/","/2026-09-02-60s-world/","/tailcat-wireguard-tunnel/","/video-download-tools-8-picks-x-douyin-bilibili/","/weixin-official-account-niche-project-guide/","/2026-09-01-60s-world/","/polarnode-free-vps-beta-reservation/","/invidious-open-source-youtube-premium-alternative/","/ublock-origin-leaves-chrome-store-mv2-alternatives/","/one-click-packaging-webpage-build-support-paid-app/","/cloudflare-warp-proton-vpn-windscribe-free-compare/","/2026-08-31-60s-world/","/colocrossing-cloud-los-angeles-vps-1099-year/","/qwen3-8-27b-local-deployment-beginner-guide/","/wordpress-official-browser-extension-hide-admin-bar/","/dug-workbuddys-6-divine-hidden-games/","/7-yuan-18-months-google-ai-pro-flow-guide/","/2026-which-tvbox-movie-studio-zyfun-choose/","/penny-server-built-picture-bed-cloudflare/","/2026-08-30-60s-world/","/2026-08-29-60s-world/","/forever-multimodal-strong-encoding-agnes-2/","/hy4-until-september-10th/","/workbuddy-suddenly-hy4-hy3-continues/","/stop-looking-models-workbuddy-launches-model-two-weeks/","/chaos-hy3-ends-where-retreat-ordinary-workers/","/cloudflare-releases-wordpress-replacement/","/ive-automated-workbuddys-cat-trip-really-points/","/2026-08-28-60s-world/","/2026-08-27-60s-world/","/hyperphp-vs-infinityfree-2026/","/2026-08-26-60s-world/","/workbuddy-hybrid-limit-exemption/","/2026-08-25-60s-world/","/unlimited-refills-every-5-hours/","/immich-self-built-photo-video-library/","/2026-08-24-60s-world/","/workbuddy-waiver-expire-found-perfect-model-access-5/","/boom/","/2026-08-23-60s-world/","/register-balance-29200-domestic-models-deepseek-v4/","/2026-08-22-60s-world/","/2026-08-21-60s-world/","/2026-08-20-60s-world/","/2026-08-19-60s-world/","/nodewarden-deployment-tutorial-build-private-bitwarden/","/tvbox-live-source-configuration-tutorial-install-cctv/","/2026-08-18-60s-world/","/2026-08-17-60s-world/","/after-sunflower-uu-remote-todesk-another-prostitution/","/2026-08-16-60s-world/","/domain-name-collection-domain-name-channels-used/","/deepseek-harness-complete-tutorial-installation/","/2026-08-15-60s-world/","/workbuddys-ultimate-money-saving-operation-apply-large/","/feiniu-nas-music-scraping-basically-problem-network/","/2026-08-14-60s-world/","/erp-rewritten-workbuddy/","/2026-08-13-60s-world/","/2026-08-12-60s-world/","/top-level/","/2026-08-11-60s-world/","/2026-08-10-60s-world/","/saving-photos/","/2026-08-09-60s-world/","/tencent-workbuddy-v5/","/bought-fiji-n1-tv-box-found-much-better-thought/","/2026-08-08-60s-world/","/workbuddy-visualization-tool/","/want-buy-deepseek-v4-flash/","/2026-08-07-60s-world/","/2026-08-06-60s-world/","/workbuddy-ima-create-personal-knowledge-base-suitable/","/2026-08-05-60s-world/","/nas-music-welcomes-strongest-group/","/2026-08-04-60s-world/","/deepseek-v4-flash-latest-quantitative-version-local/","/2026-08-03-60s-world/","/workbuddy-miniprogram-guide/","/发现超低价域名平台-com不到20块xyz十年46还能免费/","/wordpress-permalink-pros-cons/","/workbuddy-free-glm4-flash/","/deepseek-v4-flash-free/","/2026-08-02-60s-world/","/agnes-free-model-workbuddy/","/open-source-free-ai-tokens/","/2026-08-01-60s-world/","/digitalplat-free-domain/","/2026-07-31-60s-world/","/2026-07-30-60s-world/","/hexo-auto-daily-news/","/hello-world/","/xshell8-skip-registration/"],"randomlink":false,"feature_modules":{"search":false,"post_ai":false,"friend_links":false,"music":false,"right_menu":false,"translate":true,"covercolor":false},"lang":{"theme":{"dark":"已切换至深色模式","light":"已切换至浅色模式"},"copy":{"success":"复制成功","error":"复制失败"},"backtop":"返回顶部","time":{"day":"天前","hour":"小时前","just":"刚刚","min":"分钟前","month":"个月前"},"day":" 天","f12":"开发者模式已开启，请遵守 GPL 协议。","totalk":"无需删除空行，直接输入评论即可"},"aside":{"state":{"morning":"✨ 早上好，新的一天开始了","noon":"🍲 午餐时间","afternoon":"🌞 下午好","night":"早点休息","goodnight":"晚安 😴"},"witty_words":[],"witty_comment":{"prefix":"好久不见，","back":"欢迎回来，"}},"covercolor":{"enable":false,"mode":"local","api":"https://api.qjqq.cn/api/Imgcolor?img=","time":43200000},"comment":false,"lightbox":null,"right_menu":false,"translate":{"translateDelay":0,"defaultEncoding":2,"toSimplified":"转为简体","toTraditional":"转为繁体","switchedToSimplified":"已切换为简体中文","switchedToTraditional":"已切换为繁体中文"},"lure":false,"expire":false}</template><template id="config-diff">{"is_post":true,"is_page":false,"is_home":false,"page":"post","toc":true,"comment":false,"ai_text":false,"color":false}</template><meta name="generator" content="Hexo 7.3.0"></head><body id="body"><div id="console"><div class="console-content"><div class="console-card-group" data-solitude-action="onConsoleCardGroupClick" data-solitude-event="true"><div class="console-card-group-right"><div class="console-card tags" data-solitude-action="hideConsole"><div class="card-content"><div class="author-content-item-tips">标签</div><div class="author-content-item-title">探索感兴趣的内容</div></div><div class="card-tag-cloud"></div></div><div class="console-card history" data-solitude-action="hideConsole"><ul class="card-archive-list"><li class="item"><a href="/archives/2026/09/"><span class="date">2026/09</span><div class="count-group"><span class="count">41</span><span class="unit">篇</span></div></a></li><li class="item"><a href="/archives/2026/08/"><span class="date">2026/08</span><div class="count-group"><span class="count">81</span><span class="unit">篇</span></div></a></li><li class="item"><a href="/archives/2026/07/"><span class="date">2026/07</span><div class="count-group"><span class="count">5</span><span class="unit">篇</span></div></a></li><li class="item"><a href="/archives/2026/01/"><span class="date">2026/01</span><div class="count-group"><span class="count">1</span><span class="unit">篇</span></div></a></li><li class="item"><a href="/archives/"><span class="date">全部文章</span><div class="count-group"><span class="count">128</span><span class="unit">篇</span></div></a></li></ul></div></div></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" data-solitude-action="toggleTheme" title="昼夜切换" heotip="昼夜切换"><i class="solitude fas fa-circle-half-stroke"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" data-solitude-action="switchHideAside" title="侧边栏显示" heotip="侧边栏显示"><i class="solitude fas fa-arrows-left-right-to-line"></i></span></div></div></div><div class="console-mask" data-solitude-action="hideConsole"></div></div><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">128</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" data-solitude-action="toggleTheme"><i class="solitude fas fa-circle-half-stroke"></i><span>显示模式</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/" title="首页" heotip="首页"><span>首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/" title="归档" heotip="归档"><span>归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/" title="分类" heotip="分类"><span>分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/" title="标签" heotip="标签"><span>标签</span></a></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="card-tag-cloud"></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav" data-solitude-action="onNavBlankClickCloseConsole" data-solitude-event="true"><div id="nav-group"><div id="blog_name"><a href="/" title="返回博客主页" id="site-name" heotip="返回博客主页"><span class="title">爱科技</span><i class="solitude fas fa-home"></i></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" data-solitude-action="toTop" title="返回顶部" heotip="返回顶部">10 个可免费使用的 AI API 平台：零成本调用主流大模型</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span>首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><span>归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><span>分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><span>标签</span></a></div></div></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" data-solitude-action="toTop" title="返回顶部" heotip="返回顶部"><a class="totopbtn"><i class="solitude fas fa-arrow-up"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude fas fa-bars"></i></a></div></div></div></nav><div class="post-cover-aside"><a class="post-cover-aside-link fancybox" href="/wp-content/uploads/2026/09/x-cover-9b110083.jpg" target="_blank" rel="noopener" data-fancybox="images" data-caption="10 个可免费使用的 AI API 平台：零成本调用主流大模型" aria-label="10 个可免费使用的 AI API 平台：零成本调用主流大模型"><img class="post-cover-aside-img nolazyload" id="post-cover" src="/wp-content/uploads/2026/09/x-cover-9b110083.jpg" alt="10 个可免费使用的 AI API 平台：零成本调用主流大模型"></a></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="本文采用 原创 许可协议">原创</a><span class="post-meta-categories"><a class="post-meta-categories" href="/category/ai-models/">AI 与大模型</a></span><div class="tag_share"><div class="post-meta__tag-list"></div></div></div></div><h1 class="post-title">10 个可免费使用的 AI API 平台：零成本调用主流大模型</h1><div id="post-meta"><div class="meta-secondline"><span class="post-meta-date" title="发布于 2026-09-09 05:43:01"><i class="post-meta-icon solitude fas fa-calendar-days"></i><time datetime="2026-09-08T21:43:01.000Z">2026-09-08T21:43:01.000Z</time></span><span class="post-meta-date" title="最后更新于 2026-09-09 05:43:01"><i class="post-meta-icon solitude fas fa-arrows-rotate"></i><time datetime="2026-09-08T21:43:01.000Z">2026-09-08T21:43:01.000Z</time></span></div></div></div><div class="post-radius-bottom"></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content article-container"><p class="wx-cover"><img src="/wp-content/uploads/2026/09/x-cover-9b110083.jpg" alt="10 个可免费使用的 AI API 平台：零成本调用主流大模型" style="width:100%;max-width:900px;height:auto;display:block;margin:0 auto 20px;border-radius:8px"></p><p>想给项目接个大模型，却被 API 账单吓到？其实不少主流平台都提供免费额度，注册就能拿到 Key，足够日常测试、原型开发甚至小流量应用。本文把常见、稳定、门槛低的 10 家整理成一张速查表，按场景直接选。</p>
+
+<div style="border-left:4px solid #2563eb;background:#eaf2ff;padding:16px 20px;border-radius:8px;margin:24px 0">
+<p style="margin:0 0 8px;font-weight:700;color:#1d4ed8;font-size:16px">快速结论：按需求选平台</p>
+<ul style="margin:0;padding-left:20px;color:#1e3a8a">
+<li><strong>想一次试遍所有模型</strong> → OpenRouter（一个 Key 调 300+ 模型）</li>
+<li><strong>要最快响应</strong> → Groq / Cerebras（LPU / 晶圆级芯片，每秒数百 token）</li>
+<li><strong>玩开源模型</strong> → Together AI / Hugging Face Inference</li>
+<li><strong>已有 GitHub / Cloudflare / Google 账号</strong> → GitHub Models / Cloudflare Workers AI / Google AI Studio</li>
+<li><strong>需要企业级多语言或嵌入</strong> → Mistral AI / Cohere / NVIDIA NIM</li>
+</ul>
+</div>
+
+<h2>10 个免费 AI API 平台一览</h2>
+
+<h3>1. OpenRouter：一个 Key 调全球模型</h3>
+<p>OpenRouter 是模型聚合路由平台，支持 Claude、Gemini、Llama、Qwen 等 300+ 模型。免费专区里有大量标注 <code>:free</code> 的模型，注册即可调用，OpenAI 兼容格式，改一行 <code>base_url</code> 就能切换。</p>
+<p>官网：<a href="https://openrouter.ai" target="_blank" rel="nofollow">openrouter.ai</a></p>
+
+<h3>2. GitHub Models：GitHub 账号直接薅</h3>
+<p>GitHub 模型广场为登录用户提供有限免费调用额度，适合已有 GitHub 账号的开发者。可用模型以页面登录后展示为准，适合快速体验 GPT 类、Llama、DeepSeek 等模型。</p>
+<p>官网：<a href="https://github.com/marketplace/models" target="_blank" rel="nofollow">github.com/marketplace/models</a></p>
+
+<h3>3. NVIDIA NIM：老黄的免费算力</h3>
+<p>英伟达官方推理微服务，覆盖 Llama、Qwen、DeepSeek 等开源模型。注册后通常需要手机号验证，免费档适合中等强度测试，高峰期注意限速。</p>
+<p>官网：<a href="https://build.nvidia.com" target="_blank" rel="nofollow">build.nvidia.com</a></p>
+
+<h3>4. Together AI：开源模型云算力</h3>
+<p>主打开源大模型推理，部分研究模型可免费调用。适合想测试最新开源权重、又不想自己部署 GPU 的开发者。</p>
+<p>官网：<a href="https://api.together.xyz" target="_blank" rel="nofollow">api.together.xyz</a></p>
+
+<h3>5. Cloudflare Workers AI：边缘节点免费跑</h3>
+<p>在 Cloudflare 全球边缘节点上直接跑模型，无需服务器。免费档每天有一定 neurons 额度，适合低并发、低延迟的轻量应用。</p>
+<p>入口：<a href="https://dash.cloudflare.com" target="_blank" rel="nofollow">dash.cloudflare.com</a> → Workers &amp; Pages → AI</p>
+
+<h3>6. Groq：极速推理代名词</h3>
+<p>自研 LPU 推理芯片，延迟极低、吞吐极高，免费 tier 适合聊天机器人、语音助手等交互场景。OpenAI 兼容，接入成本低。</p>
+<p>官网：<a href="https://console.groq.com" target="_blank" rel="nofollow">console.groq.com</a></p>
+
+<h3>7. Google AI Studio：Gemini 官方免费层</h3>
+<p>Google 官方实验平台，Gemini 2.5 Flash / Pro 和部分 Gemma 模型有慷慨免费额度，支持长上下文和多模态。注意：部分地区的数据可能用于模型改进。</p>
+<p>官网：<a href="https://aistudio.google.com" target="_blank" rel="nofollow">aistudio.google.com</a></p>
+
+<h3>8. Mistral AI：欧洲多语言强</h3>
+<p>法国 Mistral 的 Experiment 计划提供免费额度，模型在代码、多语言任务上表现稳定。Codestral 还针对编程场景优化，适合开发助手类应用。</p>
+<p>官网：<a href="https://console.mistral.ai" target="_blank" rel="nofollow">console.mistral.ai</a></p>
+
+<h3>9. Cohere：RAG 与文本专家</h3>
+<p>Cohere 的免费层覆盖 Command、Embed 等模型，擅长文本嵌入、RAG 检索和摘要。注册即送每月固定调用额度，无需绑卡。</p>
+<p>官网：<a href="https://cohere.com" target="_blank" rel="nofollow">cohere.com</a></p>
+
+<h3>10. Hugging Face Inference：开源社区大本营</h3>
+<p>Hugging Face 服务器less推理 API 支持数万开源模型，免费档按小时配额，适合快速测试社区新模型、做 demo。</p>
+<p>官网：<a href="https://huggingface.co" target="_blank" rel="nofollow">huggingface.co</a></p>
+
+<h2>10 平台对比速查表</h2>
+<table style="width:100%;border-collapse:collapse;margin:20px 0;border:1px solid #e2e8f0">
+<thead>
+<tr style="background:#0f172a;color:#fff">
+<th style="padding:10px;border:1px solid #e2e8f0;text-align:left">平台</th>
+<th style="padding:10px;border:1px solid #e2e8f0;text-align:left">核心卖点</th>
+<th style="padding:10px;border:1px solid #e2e8f0;text-align:left">免费档特点</th>
+<th style="padding:10px;border:1px solid #e2e8f0;text-align:left">适合谁</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background:#f8fafc">
+<td style="padding:10px;border:1px solid #e2e8f0">OpenRouter</td>
+<td style="padding:10px;border:1px solid #e2e8f0">模型最多、单 Key 切换</td>
+<td style="padding:10px;border:1px solid #e2e8f0">大量 :free 模型</td>
+<td style="padding:10px;border:1px solid #e2e8f0">想一站体验所有模型</td>
+</tr>
+<tr>
+<td style="padding:10px;border:1px solid #e2e8f0">GitHub Models</td>
+<td style="padding:10px;border:1px solid #e2e8f0">GitHub 账号直通</td>
+<td style="padding:10px;border:1px solid #e2e8f0">登录后可见额度</td>
+<td style="padding:10px;border:1px solid #e2e8f0">已有 GitHub 账号</td>
+</tr>
+<tr style="background:#f8fafc">
+<td style="padding:10px;border:1px solid #e2e8f0">NVIDIA NIM</td>
+<td style="padding:10px;border:1px solid #e2e8f0">英伟达官方优化</td>
+<td style="padding:10px;border:1px solid #e2e8f0">需手机号验证</td>
+<td style="padding:10px;border:1px solid #e2e8f0">要跑开源大模型</td>
+</tr>
+<tr>
+<td style="padding:10px;border:1px solid #e2e8f0">Together AI</td>
+<td style="padding:10px;border:1px solid #e2e8f0">开源模型云算力</td>
+<td style="padding:10px;border:1px solid #e2e8f0">部分研究模型免费</td>
+<td style="padding:10px;border:1px solid #e2e8f0">开源模型玩家</td>
+</tr>
+<tr style="background:#f8fafc">
+<td style="padding:10px;border:1px solid #e2e8f0">Cloudflare Workers AI</td>
+<td style="padding:10px;border:1px solid #e2e8f0">边缘推理、零运维</td>
+<td style="padding:10px;border:1px solid #e2e8f0">每日 neurons 额度</td>
+<td style="padding:10px;border:1px solid #e2e8f0">轻量边缘应用</td>
+</tr>
+<tr>
+<td style="padding:10px;border:1px solid #e2e8f0">Groq</td>
+<td style="padding:10px;border:1px solid #e2e8f0">LPU 极速推理</td>
+<td style="padding:10px;border:1px solid #e2e8f0">免费 tier</td>
+<td style="padding:10px;border:1px solid #e2e8f0">聊天/语音交互</td>
+</tr>
+<tr style="background:#f8fafc">
+<td style="padding:10px;border:1px solid #e2e8f0">Google AI Studio</td>
+<td style="padding:10px;border:1px solid #e2e8f0">Gemini 官方入口</td>
+<td style="padding:10px;border:1px solid #e2e8f0">Gemini / Gemma 免费档</td>
+<td style="padding:10px;border:1px solid #e2e8f0">长上下文/多模态</td>
+</tr>
+<tr>
+<td style="padding:10px;border:1px solid #e2e8f0">Mistral AI</td>
+<td style="padding:10px;border:1px solid #e2e8f0">欧洲多语言强</td>
+<td style="padding:10px;border:1px solid #e2e8f0">Experiment 计划</td>
+<td style="padding:10px;border:1px solid #e2e8f0">多语言/编程助手</td>
+</tr>
+<tr style="background:#f8fafc">
+<td style="padding:10px;border:1px solid #e2e8f0">Cohere</td>
+<td style="padding:10px;border:1px solid #e2e8f0">嵌入与 RAG</td>
+<td style="padding:10px;border:1px solid #e2e8f0">每月固定调用</td>
+<td style="padding:10px;border:1px solid #e2e8f0">检索增强应用</td>
+</tr>
+<tr>
+<td style="padding:10px;border:1px solid #e2e8f0">Hugging Face</td>
+<td style="padding:10px;border:1px solid #e2e8f0">社区模型最多</td>
+<td style="padding:10px;border:1px solid #e2e8f0">按小时配额</td>
+<td style="padding:10px;border:1px solid #e2e8f0">快速试新模型</td>
+</tr>
+</tbody>
+</table>
+<p style="font-size:13px;color:#64748b;margin-top:-8px">* 免费额度与可用模型以各平台官网实时页面为准，注册前请确认最新限制。</p>
+
+<h2>一句话接入：代码几乎不用改</h2>
+<p>大多数平台都兼容 OpenAI 格式，拿到 Key 后只需改 <code>base_url</code> 和 <code>model</code>：</p>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line">client = OpenAI(api_key=<span class="string">&quot;YOUR_KEY&quot;</span>, base_url=<span class="string">&quot;https://openrouter.ai/api/v1&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(client.chat.completions.create(</span><br><span class="line">    model=<span class="string">&quot;openrouter/free&quot;</span>,</span><br><span class="line">    messages=[&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;Hello&quot;</span>&#125;]</span><br><span class="line">).choices[<span class="number">0</span>].message.content)</span><br></pre></td></tr></table></figure>
+
+<div style="border-left:4px solid #16a34a;background:#eafaf0;padding:14px 18px;border-radius:8px;margin:20px 0">
+<p style="margin:0;color:#15803d"><strong>建议：</strong>把这些 Key 接到本地网关或像 OpenClaw 这类多上游工具里，按任务自动路由——Groq 跑聊天、Gemini 读长文、DeepSeek 写代码，哪个免费额度先用哪个。</p>
+</div>
+
+<div style="border-left:4px solid #dc2626;background:#fef2f2;padding:14px 18px;border-radius:8px;margin:20px 0">
+<p style="margin:0;color:#b91c1c"><strong>风险提示：</strong>免费额度会随时调整，部分平台需要手机号验证；某些地区的数据可能用于模型训练。生产环境建议设置用量监控，避免超额扣费。</p>
+</div>
+
+<div style="background:#0f172a;color:#e2e8f0;padding:20px;border-radius:10px;margin:28px 0">
+<p style="margin:0 0 10px;font-size:18px;font-weight:700">总结</p>
+<p style="margin:0;color:#cbd5e1">10 个免费 AI API 平台已经把「零成本调用大模型」的门槛降到极低。对普通开发者来说，先用 OpenRouter / Groq / Cloudflare Workers AI 搭个原型，再按具体任务补 Google AI Studio、Mistral 或 Cohere，是最省钱的路线。</p>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><div class="post-copyright__author_img"><img class="post-copyright__author_img_front" src="/img/logo.png"></div><div class="post-copyright__author_name">爱科技</div><div class="post-copyright__author_desc">技术博客与数字生活笔记</div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" data-solitude-action="hideReward"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a>许可协议，完整转载请注明来自<a href="/">爱科技</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"></div></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/memos-on-cloudflare/"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">把 Memos 搬上 Cloudflare：零服务器跑一个属于自己的碎片笔记站</div></div></a></div><div class="next-post pull-right"><a href="/2026-09-09-60s-world/"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">9月9日，星期三，在这里每天60秒读懂世界！</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="top-group"><div class="sayhi" id="sayhi" data-solitude-action="changeWittyWord"></div></div></div><div class="avatar"><img alt="头像" src="/img/logo.png"></div><div class="description"></div><div class="bottom-group"><span class="left"><div class="name">爱科技</div><div class="desc">技术博客与数字生活笔记。</div></span><div class="social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude fas fa-bars"></i><span>文章目录</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">10 个免费 AI API 平台一览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">1. OpenRouter：一个 Key 调全球模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">2. GitHub Models：GitHub 账号直接薅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">3. NVIDIA NIM：老黄的免费算力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">4. Together AI：开源模型云算力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">5. Cloudflare Workers AI：边缘节点免费跑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">6. Groq：极速推理代名词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">7. Google AI Studio：Gemini 官方免费层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">8. Mistral AI：欧洲多语言强</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">9. Cohere：RAG 与文本专家</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">10. Hugging Face Inference：开源社区大本营</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">10 平台对比速查表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">一句话接入：代码几乎不用改</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude fas fa-map"></i><span>最近发布</span></div><div class="aside-list"><a class="aside-list-item" href="/2026-09-15-60s-world/" title="9月15日，星期二，在这里每天60秒读懂世界！"><div class="thumbnail"><img alt="9月15日，星期二，在这里每天60秒读懂世界！" src="/wp-content/uploads/60s-posters/w2.png"></div><div class="content"><span class="title" href="/2026-09-15-60s-world/" title="9月15日，星期二，在这里每天60秒读懂世界！">9月15日，星期二，在这里每天60秒读懂世界！</span><span class="categories" href="/2026-09-15-60s-world/">60秒读懂世界</span></div></a><a class="aside-list-item" href="/2026-09-13-60s-world/" title="9月13日，星期日，在这里每天60秒读懂世界！"><div class="thumbnail"><img alt="9月13日，星期日，在这里每天60秒读懂世界！" src="/wp-content/uploads/60s-posters/w7.png"></div><div class="content"><span class="title" href="/2026-09-13-60s-world/" title="9月13日，星期日，在这里每天60秒读懂世界！">9月13日，星期日，在这里每天60秒读懂世界！</span><span class="categories" href="/2026-09-13-60s-world/">60秒读懂世界</span></div></a><a class="aside-list-item" href="/stocksnap-io-free-photo-download/" title="StockSnap.io：摄影师社群运营的CC0免费图库，免注册直接下载原图"><div class="thumbnail"><img alt="StockSnap.io：摄影师社群运营的CC0免费图库，免注册直接下载原图" src="/img/default.avif"></div><div class="content"><span class="title" href="/stocksnap-io-free-photo-download/" title="StockSnap.io：摄影师社群运营的CC0免费图库，免注册直接下载原图">StockSnap.io：摄影师社群运营的CC0免费图库，免注册直接下载原图</span><span class="categories" href="/stocksnap-io-free-photo-download/">免费软件</span></div></a><a class="aside-list-item" href="/cydrive-telegram-virtual-hard-drive/" title="CyDrive：把 Telegram 变成 Windows 硬盘，零本地占用"><div class="thumbnail"><img alt="CyDrive：把 Telegram 变成 Windows 硬盘，零本地占用" src="/img/default.avif"></div><div class="content"><span class="title" href="/cydrive-telegram-virtual-hard-drive/" title="CyDrive：把 Telegram 变成 Windows 硬盘，零本地占用">CyDrive：把 Telegram 变成 Windows 硬盘，零本地占用</span><span class="categories" href="/cydrive-telegram-virtual-hard-drive/">免费软件</span></div></a><a class="aside-list-item" href="/gratisography-free-photo-download/" title="Gratisography 免费图库：免注册、可商用、原图直下"><div class="thumbnail"><img alt="Gratisography 免费图库：免注册、可商用、原图直下" src="/img/default.avif"></div><div class="content"><span class="title" href="/gratisography-free-photo-download/" title="Gratisography 免费图库：免注册、可商用、原图直下">Gratisography 免费图库：免注册、可商用、原图直下</span><span class="categories" href="/gratisography-free-photo-download/">免费软件</span></div></a></div></div></div></div></main><footer id="footer"><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2026 By<a class="footer-bar-link" href="/" title="爱科技">爱科技</a></div><div class="beian-group"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://hexo.io/" title="框架：Hexo" heotip="框架：Hexo">框架：Hexo</a><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/everfu/hexo-theme-solitude" title="主题：Solitude" heotip="主题：Solitude">主题：Solitude</a></div></div><div class="footer-bar-right"></div></div></div><div class="comment-barrage needEndHide"></div></footer></div><div><!-- Critical scripts loaded synchronously--><script src="/js/utils.js?v=4.0.0"></script><!-- Non-critical scripts loaded asynchronously--><script defer src="/js/third_party/waterfall.min.js?v=4.0.0"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><!-- Feature-specific scripts loaded asynchronously--><!-- UI enhancement scripts--><script defer src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><!-- Music player scripts--><!-- Cover color processing scripts--><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+Solitude.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+</script><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!-- Search functionality--><!-- Main module dynamically imports enabled first-party features.--><script type="module" src="/js/main.js?v=4.0.0"></script><div class="js-pjax"></div></div><!-- pjax--><script>function initPjax() {
+    if (typeof Pjax === 'undefined') {
+        setTimeout(initPjax, 100);
+        return;
+    }
+
+    const instance = new Pjax({
+        elements: 'a:not([target="_blank"])',
+        selectors: ["title","#body-wrap","#site-config","meta[name=\"description\"]",".js-pjax","meta[property^=\"og:\"]","#config-diff",".rs_show",".rs_hide"],
+        cacheBust: false,
+        analytics: false,
+        scrollRestoration: false
+    })
+
+    // Pjax dispatches synthetic resize/scroll events on window after every selector switch.
+    // Use a Node target so injected listeners that call event.target.contains() remain compatible.
+    instance.onSwitch = function () {
+        this.state.numPendingSwitches--
+
+        if (this.state.numPendingSwitches === 0) {
+            document.dispatchEvent(new Event('resize', { bubbles: true }))
+            document.dispatchEvent(new Event('scroll', { bubbles: true }))
+            this.afterAllSwitches()
+        }
+    }
+
+    Solitude.pjax = instance;
+
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
+
+    document.addEventListener('pjax:send', () => {
+        document.dispatchEvent(new CustomEvent('solitude:beforeNavigate'))
+        Solitude.disposePage?.()
+        Object.values(window.globalFn?.pjax || {}).forEach(dispose => dispose())
+        if (window.globalFn) window.globalFn.pjax = {}
+    })
+
+    document.addEventListener('pjax:complete', async () => {
+        await Solitude.refresh()
+
+        document.querySelectorAll('script[data-pjax]').forEach(item => {
+            const newScript = document.createElement('script')
+            const content = item.text || item.textContent || item.innerHTML || ""
+            Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+            newScript.appendChild(document.createTextNode(content))
+            item.parentNode.replaceChild(newScript, item)
+        })
+
+        Solitude.config.lazyload.enable && window.lazyLoadInstance?.update()
+        document.dispatchEvent(new CustomEvent('solitude:afterNavigate', {
+            detail: {page: Solitude.page}
+        }))
+
+    })
+
+    document.addEventListener('pjax:error', (e) => {
+        if (e.request.status === 404) {
+            Solitude.navigate('/404.html')
+        }
+    })
+}
+
+// 初始化 Pjax
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPjax);
+} else {
+    initPjax();
+}</script><!-- google adsense--></body></html>

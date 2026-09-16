@@ -1,0 +1,19 @@
+---
+title: "继向日葵、UU远程、ToDesk之后，又一个“白嫖”远程工具来了"
+date: '2026-08-17T07:28:03+08:00'
+updated: '2026-08-17T07:28:19+08:00'
+slug: after-sunflower-uu-remote-todesk-another-prostitution
+categories:
+- "软件与开发"
+description: "节点小宝即将上线远程桌面功能，支持免密和密码远程，暂不支持ID远程，采用P2P加中继连接方式，目前测试阶段P2P连接稳定、画面流畅。该功能不限速不限时，分屏功能也免费开放，现处于beta阶段，正式版上线后功能将持续完善。"
+cover: "/wp-content/uploads/2026/08/image-1d3f5865860a37639798651948b06a0a.jpg"
+
+---
+
+<p class="wx-cover" style="text-align:center;margin:0 auto 18px">
+<img src="/wp-content/uploads/2026/08/image-1d3f5865860a37639798651948b06a0a.jpg" alt="封面" style="max-width:100%;height:auto;display:block;margin:0 auto">
+</p>
+
+<section class="mp_profile_iframe_wrp" data-mp-plugin="96weixin"></section><p><span style="font-size: 14px">继向日葵、UU远程、ToDesk之后，又一款国产远程工具要来了，<span style="font-size: 14px;letter-spacing: 0.578px">大家对节点小宝都不陌生，</span><strong>去年<span style="font-size: 14px;letter-spacing: 0.578px">节点小宝支持系统原生桌面远程RDP</span></strong><span style="font-size: 14px;letter-spacing: 0.578px">，但实际用起来还是比较麻烦，可操作性不是很高连接也不够方便</span></span></p><p style="text-align: center"><img data-galleryid="" data-imgfileid="100012771" data-ratio="0.3738140417457306" data-s="300,640" data-type="png" data-w="527" style="width: 70%" src="/wp-content/uploads/2026/08/640-36.png"></p><p><span style="font-size: 14px"></span><span style="font-size: 14px;letter-spacing: 0.034em">现在节点小宝也准备<strong>加入全新的远程功能</strong>，体验上基本就和向日葵、UU远程差不多，支持免密远程、密码远程，</span><strong style="font-size: 14px;letter-spacing: 0.034em">暂时还不支持 ID 远程，后面迭代更新支持</strong></p><p><span style="font-size: 14px">连接方面支持 P2P，P2P不通就走中继，这套逻辑和其他远程工具基本一样，</span><span style="font-size: 14px;letter-spacing: 0.034em">我自己已经用了好几天，大部分时间都是 P2P 连接，稳定性真的不错，基本连上就是一天，中间没遇到断开的情况，画面也比较清晰、流畅，</span><span style="font-size: 14px;letter-spacing: 0.034em">毕竟节点小宝本身就是做内网穿透的，这次再加上远程桌面，我觉得还是挺搭的</span></p><p><span style="font-size: 14px;letter-spacing: 0.034em">之前聊天说是<strong>不限速、不限时间</strong>，最关键的是，除了UU远程又多了一款可以白嫖的远程工具，不过具体还是等正式上线才知道</span></p><p><span style="font-size: 14px">给大家展示一下使用过程，被控端和远程端都要安装支持最新远程的节点小宝，被控端需要手动开启远程，可以选择免密登录或者密码登录，ID远程暂不支持，后面肯定会有，这是基操</span></p><p style="text-align: center"><span><img data-galleryid="" data-imgfileid="100012791" data-ratio="0.5105820105820106" data-s="300,640" data-type="png" data-w="378" style="letter-spacing: 0.578px;text-align: center;white-space: normal" src="/wp-content/uploads/2026/08/640-37.png"></span></p><p><span style="font-size: 14px">被控端开启后，访问端找到要访问的被控端，就可以进行远程访问了</span></p><p style="text-align: center"><img data-galleryid="" data-imgfileid="100012792" data-ratio="0.44587628865979384" data-s="300,640" data-type="png" data-w="388" src="/wp-content/uploads/2026/08/640-38.png"></p><p style="text-align: left"><span style="font-size: 14px">如下就是远程后的界面咯，也是有分屏功能的，和UU是一样的，这个功能在向日葵里面是收费的<br></span></p><p style="text-align: center"><img data-galleryid="" data-imgfileid="100012794" data-ratio="0.5305555555555556" data-s="300,640" data-type="png" data-w="1080" src="/wp-content/uploads/2026/08/640-39.png"></p><p><span style="font-size: 14px">目前还是beta版本，有些功能还在添加和完善，等到正式版上线之后肯定比我现在用的版本功能多</span></p><p><span style="font-size: 14px">以下是已有的功能，该有的都有了，用下来没发现什么BUG</span></p><p style="text-align: center"><img data-galleryid="" data-imgfileid="100012795" data-ratio="0.2064814814814815" data-s="300,640" data-type="jpeg" data-w="1080" src="/wp-content/uploads/2026/08/640-42.jpg"></p><p><span style="font-size: 14px">任务栏右键给的选项</span></p><p style="text-align: center"><img data-galleryid="" data-imgfileid="100012796" data-ratio="1.1428571428571428" data-s="300,640" data-type="png" data-w="182" src="/wp-content/uploads/2026/08/640-40.png"></p><p><span style="font-size: 14px">目前还缺少网络状态信息状态展示的功能，应该后面正式版会上，其他基本不缺了，目前够用了</span></p><p></p>
+
+文章来源：<a href="https://mp.weixin.qq.com/s/huwHXvAuOszch01nSM45xA" target="_blank" rel="nofollow" title="https://mp.weixin.qq.com/s/huwHXvAuOszch01nSM45xA">mp.weixin.qq.com</a>

@@ -1,0 +1,131 @@
+/* ==========================================================================
+   每天60秒读懂世界 — jun.la 风格卡片样式
+   复刻 https://www.jun.la/60snews/ 的视觉：
+   - 白色描边卡片
+   - 居中每日长图（海报）
+   - 红色斜体 NEWS 标签
+   - 含「农历 / 年月日 / 站点标识」的日期条（上 3px、下 1px 边框）
+   - 16px 编号新闻条目
+   - 每日金句
+   - 灰色来源行
+   ========================================================================== */
+
+.junla-60s {
+  --js-border: #dcdcdc;
+  --js-gray: #545454;
+  --js-red: #f9564e;
+  --js-bar-top: #707070;
+  --js-bar-bottom: #adadad;
+  --js-text: #333333;
+  --js-source: #bfbfbf;
+  --js-quote-bg: #fff8f3;
+  --js-quote-bar: #f9564e;
+
+  font-family: "Microsoft YaHei", "微软雅黑", -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Arial, sans-serif;
+  color: var(--js-text);
+  line-height: 1.7;
+}
+
+/* 外层卡片：白底 + 1px 灰边 + 3% 内边距 */
+.junla-60s .js-card {
+  border: 1px solid var(--js-border);
+  padding: 3%;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 顶部海报长图：居中、自适应宽度 */
+.junla-60s .js-cover {
+  text-align: center;
+  margin-bottom: 6px;
+}
+.junla-60s .js-cover img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 2px;
+}
+
+/* 红色斜体 NEWS 标签 */
+.junla-60s .js-news-label {
+  font-size: 12px;
+  color: var(--js-red);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 4px 0 6px;
+}
+
+/* 日期条：上 3px / 下 1px 边框，左右 + 中间三段 */
+.junla-60s .js-datebar {
+  display: flex;
+  align-items: center;
+  border-top: 3px solid var(--js-bar-top);
+  border-bottom: 1px solid var(--js-bar-bottom);
+  padding: 8px 0;
+}
+.junla-60s .js-date-left,
+.junla-60s .js-date-right {
+  width: 23%;
+  color: var(--js-gray);
+  font-size: 12px;
+  line-height: 16px;
+  font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+}
+.junla-60s .js-date-left { text-align: left; }
+.junla-60s .js-date-right { text-align: right; }
+.junla-60s .js-date-left span,
+.junla-60s .js-date-right span { display: block; }
+
+.junla-60s .js-date-center {
+  flex: 1;
+  text-align: center;
+  padding: 0 4px;
+}
+.junla-60s .js-logo {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 1px;
+}
+.junla-60s .js-logo::before { content: "📌 "; }
+
+/* 新闻条目：16px，与 jun.la 一致的段落间距 */
+.junla-60s .js-news { margin-top: 6px; }
+.junla-60s .js-item {
+  font-size: 16px;
+  margin: 10px 0 0;
+  color: var(--js-text);
+  word-break: break-word;
+}
+
+/* 微语 / 每日金句：与预览一致的高亮卡片框 */
+.junla-60s .js-quote,
+.junla-60s .js-weiyu {
+  font-size: 16px;
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  background: var(--js-quote-bg);
+  border-left: 3px solid var(--js-quote-bar);
+  border-radius: 2px;
+  color: #7a3b16;
+  word-break: break-word;
+}
+
+/* 灰色来源行 */
+.junla-60s .js-source {
+  color: var(--js-source);
+  font-size: 12px;
+  margin: 14px 0 0;
+  letter-spacing: 0.3px;
+}
+
+/* 小屏适配 */
+@media (max-width: 480px) {
+  .junla-60s .js-item,
+  .junla-60s .js-quote { font-size: 15px; }
+  .junla-60s .js-logo { font-size: 13px; }
+}
