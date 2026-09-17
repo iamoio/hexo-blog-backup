@@ -1,0 +1,12 @@
+{
+  "name": "hexo-brevity-admin",
+  "version": "1.0.0",
+  "description": "即刻短文后台管理",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --port 3001"
+  },
+  "keywords": ["hexo", "brevity", "admin"],
+  "license": "MIT"
+}
