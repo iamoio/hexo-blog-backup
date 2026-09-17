@@ -1,0 +1,16 @@
+{
+  "computer": [
+    {"name": "MacBook Pro", "spec": "M2 Pro / 32GB / 1TB", "img": "/img/kit/macbook.jpg"},
+    {"name": "Dell U2723QE", "spec": "27寸 4K IPS 显示器", "img": "/img/kit/monitor.jpg"}
+  ],
+  "peripherals": [
+    {"name": "Keychron K2", "spec": "机械键盘 / Gateron 红轴", "img": "/img/kit/keyboard.jpg"},
+    {"name": "Logitech MX Master 3S", "spec": "无线鼠标", "img": "/img/kit/mouse.jpg"},
+    {"name": "Sony WH-1000XM5", "spec": "降噪耳机", "img": "/img/kit/headphone.jpg"}
+  ],
+  "software": [
+    {"name": "VS Code", "spec": "主力编辑器"},
+    {"name": "Alfred", "spec": "macOS 效率工具"},
+    {"name": "Obsidian", "spec": "知识管理"}
+  ]
+}

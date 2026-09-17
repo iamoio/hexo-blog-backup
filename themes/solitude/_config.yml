@@ -41,6 +41,11 @@ nav:
     归档: /archives/ || fas fa-folder-closed # item name: link || icon
     分类: /categories/ || fas fa-clone
     标签: /tags/ || fas fa-tags
+    即刻短文: /essay/ || fab fa-twitter
+    我的装备: /kit/ || fas fa-laptop
+    音乐馆: /music/ || fas fa-music
+    友链鱼塘: /links/ || fas fa-fish
+    弹幕留言: /message/ || fas fa-comment-dots
 
   # Right button
   # 右侧按钮
@@ -882,7 +887,7 @@ music:
 # Danmaku Page
 # 弹幕留言页面
 envelope:
-  enable: false
+  enable: true
   line: 10 # 显示行数
   speed: 20 # 播放速度
   hover: true # 鼠标悬停暂停
