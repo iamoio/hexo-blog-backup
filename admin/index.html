@@ -3,53 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>即刻短文后台管理</title>
+    <title>即刻短文管理后台</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; min-height: 100vh; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { background: white; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 24px; color: #333; }
-        .header .back-link { color: #666; text-decoration: none; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; transition: all 0.2s; }
-        .header .back-link:hover { background: #f0f0f0; }
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
-        .stat-card .number { font-size: 32px; font-weight: bold; color: #2563eb; }
-        .stat-card .label { font-size: 14px; color: #666; margin-top: 5px; }
-        .editor-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .editor-card h2 { font-size: 18px; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; }
-        .entry { display: flex; gap: 15px; margin-bottom: 15px; padding: 15px; background: #fafafa; border-radius: 6px; border: 1px solid #e5e5e5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { background: white; padding: 24px 32px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; color: #1a1a1a; font-weight: 600; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .header-actions a { color: #666; text-decoration: none; padding: 8px 16px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 14px; transition: all 0.2s; }
+        .header-actions a:hover { background: #f5f5f5; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
+        .stat-card .number { font-size: 36px; font-weight: 700; color: #2563eb; }
+        .stat-card .label { font-size: 13px; color: #666; margin-top: 6px; }
+        .editor-card { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 24px; }
+        .editor-card h2 { font-size: 18px; color: #1a1a1a; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+        .entry { display: flex; gap: 16px; margin-bottom: 16px; padding: 16px; background: #fafbfc; border-radius: 8px; border: 1px solid #e8e8e8; transition: all 0.2s; }
         .entry:hover { border-color: #2563eb; background: #f8faff; }
-        .entry-time { flex: 0 0 140px; }
-        .entry-time input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .entry-time { flex: 0 0 160px; }
+        .entry-time input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         .entry-content { flex: 1; }
-        .entry-content textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; resize: vertical; min-height: 60px; font-family: inherit; }
+        .entry-content textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit; line-height: 1.5; }
         .entry-content textarea:focus, .entry-time input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
         .entry-actions { display: flex; align-items: flex-start; padding-top: 8px; }
-        .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; padding: 5px 10px; font-size: 13px; opacity: 0.7; }
-        .btn-delete:hover { opacity: 1; }
-        .btn-add { width: 100%; padding: 12px; background: #f0f0f0; border: 2px dashed #ccc; border-radius: 6px; color: #666; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+        .btn-delete { background: none; border: none; color: #dc2626; cursor: pointer; padding: 6px 12px; font-size: 13px; opacity: 0.7; border-radius: 4px; transition: all 0.2s; }
+        .btn-delete:hover { opacity: 1; background: #fee2e2; }
+        .btn-add { width: 100%; padding: 14px; background: #f8f9fa; border: 2px dashed #d0d0d0; border-radius: 8px; color: #666; font-size: 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 20px; }
         .btn-add:hover { background: #e8f4ff; border-color: #2563eb; color: #2563eb; }
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .btn-primary { background: #2563eb; color: white; }
         .btn-primary:hover { background: #1d4ed8; }
         .btn-secondary { background: #f0f0f0; color: #666; }
         .btn-secondary:hover { background: #e5e5e5; }
         .btn-success { background: #16a34a; color: white; }
         .btn-success:hover { background: #15803d; }
-        .toast { position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; }
+        .toast { position: fixed; top: 24px; right: 24px; background: #333; color: white; padding: 14px 20px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); opacity: 0; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; font-size: 14px; }
         .toast.show { opacity: 1; transform: translateY(0); }
         .toast.success { background: #16a34a; }
         .toast.error { background: #dc2626; }
-        @media (max-width: 600px) { .stats { grid-template-columns: 1fr; } .entry { flex-direction: column; } .entry-time { flex: none; width: 100%; } }
+        .toast.loading { background: #2563eb; }
+        @media (max-width: 600px) { .stats { grid-template-columns: 1fr; } .entry { flex-direction: column; } .entry-time { flex: none; width: 100%; } .header { flex-direction: column; gap: 16px; text-align: center; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📝 即刻短文管理</h1>
-            <a href="/" class="back-link">← 返回首页</a>
+            <h1>📝 即刻短文管理后台</h1>
+            <div class="header-actions">
+                <a href="/essay/" target="_blank">👁️ 预览短文</a>
+                <a href="/">← 返回首页</a>
+            </div>
         </div>
         
         <div class="stats">
@@ -65,9 +70,8 @@
             <button class="btn-add" onclick="addEntry()">+ 添加新短文</button>
             
             <div class="actions">
-                <button class="btn btn-primary" onclick="saveData()">💾 保存修改</button>
+                <button class="btn btn-primary" onclick="saveData()" id="saveBtn">💾 保存并部署</button>
                 <button class="btn btn-secondary" onclick="loadData()">🔄 刷新数据</button>
-                <button class="btn btn-success" onclick="previewPage()">👁️ 预览页面</button>
             </div>
         </div>
     </div>
@@ -75,16 +79,77 @@
     <div class="toast" id="toast"></div>
     
     <script>
-        let brevityData = [];
+        // GitHub 仓库配置
+        const GITHUB_REPO = 'iamoio/hexo-blog-backup';
+        const BRANCH = 'main';
+        const FILE_PATH = 'source/_data/brevity.json';
         
-        async function loadData() {
+        let brevityData = [];
+        let currentSHA = null;
+        
+        // 从 URL 参数读取 Token（如果有的话）
+        function getToken() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('token') || localStorage.getItem('github_token') || '';
+        }
+        
+        function setToken(token) {
+            localStorage.setItem('github_token', token);
+        }
+        
+        async function fetchWithAuth(url, options = {}) {
+            const token = getToken();
+            if (!token) {
+                throw new Error('请先在 URL 中添加 ?token=YOUR_GITHUB_TOKEN');
+            }
+            
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json',
+                    ...options.headers
+                }
+            });
+            
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || `HTTP ${response.status}`);
+            }
+            
+            return response;
+        }
+        
+        async function loadFile() {
+            const token = getToken();
+            if (!token) {
+                document.getElementById('entries').innerHTML = `
+                    <div style="text-align:center;padding:40px;color:#666;">
+                        <p style="margin-bottom:16px;">🔐 请输入 GitHub Token 以访问后台</p>
+                        <input type="text" id="tokenInput" placeholder="ghp_xxxxxxxx" style="padding:10px;border:1px solid #ddd;border-radius:6px;width:300px;">
+                        <button onclick="submitToken()" style="margin-left:10px;padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:6px;cursor:pointer;">确认</button>
+                    </div>`;
+                return;
+            }
+            
             try {
-                const response = await fetch('/_data/brevity.json');
-                brevityData = await response.json();
+                const response = await fetchWithAuth(`https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}?ref=${BRANCH}`);
+                const data = await response.json();
+                currentSHA = data.sha;
+                brevityData = JSON.parse(atob(data.content));
                 renderEntries();
                 updateStats();
             } catch (e) {
-                showToast('加载失败', 'error');
+                showToast('加载失败: ' + e.message, 'error');
+            }
+        }
+        
+        function submitToken() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if (token) {
+                setToken(token);
+                loadFile();
             }
         }
         
@@ -102,13 +167,19 @@
                     </div>
                     <div class="entry-content">
                         <textarea placeholder="写下你的即刻动态..." 
-                                  onchange="updateEntry(${index}, 'content', this.value)">${entry.content}</textarea>
+                                  onchange="updateEntry(${index}, 'content', this.value)">${escapeHtml(entry.content)}</textarea>
                         <div class="entry-actions">
                             <button class="btn-delete" onclick="deleteEntry(${index})">🗑️ 删除</button>
                         </div>
                     </div>
                 </div>
             `).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
         function updateStats() {
@@ -141,32 +212,81 @@
         }
         
         async function saveData() {
+            const token = getToken();
+            if (!token) {
+                showToast('请先输入 GitHub Token', 'error');
+                return;
+            }
+            
+            const validData = brevityData.filter(e => e.time && e.content.trim());
+            if (validData.length === 0) {
+                showToast('至少需要一条短文', 'error');
+                return;
+            }
+            
+            // 按时间倒序排序
+            validData.sort((a, b) => new Date(b.time) - new Date(a.time));
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '⏳ 保存中...';
+            
             try {
-                const validData = brevityData.filter(e => e.time && e.content.trim());
-                if (validData.length === 0) { showToast('至少需要一条短文', 'error'); return; }
-                validData.sort((a, b) => new Date(b.time) - new Date(a.time));
+                const fileContent = btoa(JSON.stringify(validData, null, 2));
                 
-                // 这里模拟保存，实际需要后端 API
-                // fetch('/admin/api/save', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: validData}) })
+                const response = await fetchWithAuth(`https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        message: `Update brevity: ${validData.length} entries`,
+                        content: fileContent,
+                        sha: currentSHA,
+                        branch: BRANCH
+                    })
+                });
                 
-                // 临时方案：直接修改本地 JSON 文件（仅用于测试）
-                showToast('保存成功！共 ' + validData.length + ' 条', 'success');
-                setTimeout(() => previewPage(), 500);
+                const data = await response.json();
+                currentSHA = data.content.sha;
+                
+                showToast(`✅ 保存成功！共 ${validData.length} 条短文`, 'success');
+                
+                // 触发 GitHub Actions 重新部署
+                setTimeout(() => {
+                    triggerDeploy();
+                }, 1000);
+                
             } catch (e) {
-                showToast('保存失败', 'error');
+                showToast('保存失败: ' + e.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 保存并部署';
             }
         }
         
-        function previewPage() { window.open('/essay/', '_blank'); }
+        async function triggerDeploy() {
+            try {
+                await fetchWithAuth(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/hexo-deploy.yml/dispatches`, {
+                    method: 'POST',
+                    body: JSON.stringify({ ref: BRANCH })
+                });
+                showToast('🚀 已触发重新部署', 'success');
+            } catch (e) {
+                showToast('部署触发失败（可能未配置 workflow）', 'error');
+            }
+        }
+        
+        async function loadData() {
+            await loadFile();
+            showToast('数据已刷新', 'success');
+        }
         
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = 'toast show ' + type;
-            setTimeout(() => { toast.className = 'toast'; }, 3000);
+            setTimeout(() => { toast.className = 'toast'; }, 4000);
         }
         
-        document.addEventListener('DOMContentLoaded', loadData);
+        document.addEventListener('DOMContentLoaded', loadFile);
     </script>
 </body>
 </html>

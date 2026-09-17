@@ -46,6 +46,7 @@ nav:
     音乐馆: /music/ || fas fa-music
     友链鱼塘: /links/ || fas fa-fish
     弹幕留言: /message/ || fas fa-comment-dots
+    管理后台: /admin/ || fas fa-cog
 
   # Right button
   # 右侧按钮
